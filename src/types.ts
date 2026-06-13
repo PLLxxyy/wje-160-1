@@ -44,6 +44,15 @@ export interface MistakeRecord {
   lastSelected: GarbageType;
 }
 
+/** 自由练习统计 */
+export interface PracticeStats {
+  totalRounds: number;
+  totalQuestions: number;
+  totalCorrect: number;
+  bestAccuracy: number;
+  lastAccuracy: number;
+}
+
 /** 全局持久化数据 */
 export interface GameData {
   levels: LevelRecord[];
@@ -53,6 +62,7 @@ export interface GameData {
   mistakes: Record<number, MistakeRecord>;
   leaderboard: RankRecord[];
   playerName: string;
+  practice: PracticeStats;
 }
 
 /** 垃圾分类信息 */

@@ -22,6 +22,13 @@ function getDefaultData(): GameData {
     mistakes: {},
     leaderboard: [],
     playerName: '',
+    practice: {
+      totalRounds: 0,
+      totalQuestions: 0,
+      totalCorrect: 0,
+      bestAccuracy: 0,
+      lastAccuracy: 0,
+    },
   };
 }
 
@@ -37,6 +44,7 @@ export function loadData(): GameData {
       levels: parsed.levels && parsed.levels.length > 0 ? parsed.levels : defaults.levels,
       mistakes: parsed.mistakes || {},
       leaderboard: parsed.leaderboard || [],
+      practice: parsed.practice || defaults.practice,
     };
   } catch {
     return getDefaultData();
@@ -151,6 +159,27 @@ export function setPlayerName(data: GameData, name: string): GameData {
 export function removeMistake(data: GameData, questionId: number): GameData {
   const newData = { ...data, mistakes: { ...data.mistakes } };
   delete newData.mistakes[questionId];
+  saveData(newData);
+  return newData;
+}
+
+/** 记录自由练习结果（不影响闯关记录） */
+export function recordPracticeResult(
+  data: GameData,
+  correctCount: number,
+  totalCount: number,
+): GameData {
+  const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
+  const newData = {
+    ...data,
+    practice: {
+      totalRounds: data.practice.totalRounds + 1,
+      totalQuestions: data.practice.totalQuestions + totalCount,
+      totalCorrect: data.practice.totalCorrect + correctCount,
+      bestAccuracy: Math.max(data.practice.bestAccuracy, accuracy),
+      lastAccuracy: accuracy,
+    },
+  };
   saveData(newData);
   return newData;
 }

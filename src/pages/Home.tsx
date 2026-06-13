@@ -6,10 +6,11 @@ import { setPlayerName } from '../utils/storage';
 interface HomeProps {
   gameData: GameData;
   onStartLevel: (level: number) => void;
+  onStartPractice: () => void;
   onProfile: () => void;
 }
 
-const Home: React.FC<HomeProps> = ({ gameData, onStartLevel, onProfile }) => {
+const Home: React.FC<HomeProps> = ({ gameData, onStartLevel, onStartPractice, onProfile }) => {
   const [showNameModal, setShowNameModal] = useState(!gameData.playerName);
   const [nameInput, setNameInput] = useState('');
 
@@ -75,6 +76,25 @@ const Home: React.FC<HomeProps> = ({ gameData, onStartLevel, onProfile }) => {
         <div className="stat">
           <div className="stat-value">{accuracy}%</div>
           <div className="stat-label">正确率</div>
+        </div>
+      </div>
+
+      {/* 自由练习入口 */}
+      <div className="practice-entry-card" onClick={onStartPractice}>
+        <div className="practice-entry-left">
+          <div className="practice-entry-icon">🎯</div>
+          <div>
+            <div className="practice-entry-title">自由练习</div>
+            <div className="practice-entry-desc">
+              随机抽10题 · 不限时 · 不影响闯关
+            </div>
+          </div>
+        </div>
+        <div className="practice-entry-right">
+          <div className="practice-entry-rate">
+            最高 {gameData.practice.bestAccuracy}%
+          </div>
+          <div className="practice-entry-arrow">→</div>
         </div>
       </div>
 

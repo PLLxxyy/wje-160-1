@@ -259,3 +259,14 @@ export function getQuestionsForLevel(level: number): Question[] {
   }
   return arr;
 }
+
+/** 从全部题库随机抽取指定数量的题目（用于自由练习） */
+export function getRandomQuestions(count: number = QUESTIONS_PER_LEVEL): Question[] {
+  const arr = [...allQuestions];
+  // Fisher-Yates shuffle
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr.slice(0, count);
+}
