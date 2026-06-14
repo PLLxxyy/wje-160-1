@@ -5,7 +5,7 @@ import { ProgressBar } from '../components/ProgressBar';
 import { ComboPopup } from '../components/ComboPopup';
 
 interface PracticeQuizProps {
-  onFinish: (correctCount: number, totalCount: number, timeUsed: number) => void;
+  onFinish: (correctCount: number, totalCount: number) => void;
   onBack: () => void;
 }
 
@@ -19,7 +19,6 @@ const PracticeQuiz: React.FC<PracticeQuizProps> = ({ onFinish, onBack }) => {
   const [selected, setSelected] = useState<GarbageType | null>(null);
   const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
 
-  const startTimeRef = useRef(Date.now());
   const processingRef = useRef(false);
   const answersRef = useRef<AnswerResult[]>([]);
   const correctCountRef = useRef(0);
@@ -32,9 +31,8 @@ const PracticeQuiz: React.FC<PracticeQuizProps> = ({ onFinish, onBack }) => {
 
   const finishQuiz = useCallback(
     (finalAnswers: AnswerResult[]) => {
-      const timeUsed = Math.round((Date.now() - startTimeRef.current) / 1000);
       const correct = finalAnswers.filter(a => a.correct).length;
-      onFinish(correct, PRACTICE_QUESTION_COUNT, timeUsed);
+      onFinish(correct, PRACTICE_QUESTION_COUNT);
     },
     [onFinish],
   );

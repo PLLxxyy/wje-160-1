@@ -16,7 +16,7 @@ type Page =
   | { name: 'profile' }
   | { name: 'mistakes' }
   | { name: 'practice-quiz' }
-  | { name: 'practice-result'; correctCount: number; totalCount: number; timeUsed: number };
+  | { name: 'practice-result'; correctCount: number; totalCount: number };
 
 const App: React.FC = () => {
   const [gameData, setGameData] = useState<GameData>(() => loadData());
@@ -88,8 +88,8 @@ const App: React.FC = () => {
     case 'practice-quiz':
       return (
         <PracticeQuiz
-          onFinish={(correctCount, totalCount, timeUsed) =>
-            setPage({ name: 'practice-result', correctCount, totalCount, timeUsed })
+          onFinish={(correctCount, totalCount) =>
+            setPage({ name: 'practice-result', correctCount, totalCount })
           }
           onBack={goHome}
         />
@@ -99,7 +99,6 @@ const App: React.FC = () => {
         <PracticeResult
           correctCount={page.correctCount}
           totalCount={page.totalCount}
-          timeUsed={page.timeUsed}
           gameData={gameData}
           updateData={updateData}
           onHome={goHome}

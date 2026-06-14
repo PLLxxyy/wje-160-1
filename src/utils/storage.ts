@@ -23,7 +23,6 @@ function getDefaultData(): GameData {
     leaderboard: [],
     playerName: '',
     practice: {
-      totalRounds: 0,
       totalQuestions: 0,
       totalCorrect: 0,
       bestAccuracy: 0,
@@ -163,7 +162,7 @@ export function removeMistake(data: GameData, questionId: number): GameData {
   return newData;
 }
 
-/** 记录自由练习结果（不影响闯关记录） */
+/** 记录自由练习结果（仅正确率相关，不影响闯关记录） */
 export function recordPracticeResult(
   data: GameData,
   correctCount: number,
@@ -173,7 +172,6 @@ export function recordPracticeResult(
   const newData = {
     ...data,
     practice: {
-      totalRounds: data.practice.totalRounds + 1,
       totalQuestions: data.practice.totalQuestions + totalCount,
       totalCorrect: data.practice.totalCorrect + correctCount,
       bestAccuracy: Math.max(data.practice.bestAccuracy, accuracy),

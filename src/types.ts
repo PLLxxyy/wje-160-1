@@ -44,9 +44,8 @@ export interface MistakeRecord {
   lastSelected: GarbageType;
 }
 
-/** 自由练习统计 */
+/** 自由练习统计（仅正确率相关） */
 export interface PracticeStats {
-  totalRounds: number;
   totalQuestions: number;
   totalCorrect: number;
   bestAccuracy: number;

@@ -5,7 +5,6 @@ import { recordPracticeResult } from '../utils/storage';
 interface PracticeResultProps {
   correctCount: number;
   totalCount: number;
-  timeUsed: number;
   gameData: GameData;
   updateData: (updater: (prev: GameData) => GameData) => void;
   onHome: () => void;
@@ -13,7 +12,7 @@ interface PracticeResultProps {
 }
 
 const PracticeResult: React.FC<PracticeResultProps> = ({
-  correctCount, totalCount, timeUsed, gameData, updateData, onHome, onRetry,
+  correctCount, totalCount, gameData, updateData, onHome, onRetry,
 }) => {
   const accuracy = totalCount > 0 ? Math.round((correctCount / totalCount) * 100) : 0;
 
@@ -21,13 +20,10 @@ const PracticeResult: React.FC<PracticeResultProps> = ({
     updateData(prev => recordPracticeResult(prev, correctCount, totalCount));
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const minutes = Math.floor(timeUsed / 60);
-  const seconds = timeUsed % 60;
-  const timeStr = minutes > 0 ? `${minutes}分${seconds}秒` : `${seconds}秒`;
-
-  const totalRounds = gameData.practice.totalRounds + 1;
-  const avgAccuracy = totalRounds > 0
-    ? Math.round(((gameData.practice.totalCorrect + correctCount) / (gameData.practice.totalQuestions + totalCount)) * 100)
+  const newTotalQuestions = gameData.practice.totalQuestions + totalCount;
+  const newTotalCorrect = gameData.practice.totalCorrect + correctCount;
+  const avgAccuracy = newTotalQuestions > 0
+    ? Math.round((newTotalCorrect / newTotalQuestions) * 100)
     : 0;
   const bestAccuracy = Math.max(gameData.practice.bestAccuracy, accuracy);
 
@@ -67,31 +63,31 @@ const PracticeResult: React.FC<PracticeResultProps> = ({
       <div className="result-stats">
         <div className="result-stat">
           <div className="rs-value">{accuracy}%</div>
-          <div className="rs-label">正确率</div>
+          <div className="rs-label">本次正确率</div>
         </div>
         <div className="result-stat">
           <div className="rs-value">{correctCount}/{totalCount}</div>
           <div className="rs-label">答对数</div>
         </div>
         <div className="result-stat">
-          <div className="rs-value">{timeStr}</div>
-          <div className="rs-label">用时</div>
+          <div className="rs-value">{bestAccuracy}%</div>
+          <div className="rs-label">最高正确率</div>
         </div>
       </div>
 
-      <div className="section-title" style={{ marginTop: 24 }}>📊 练习统计</div>
+      <div className="section-title" style={{ marginTop: 24 }}>📊 累计统计</div>
       <div className="home-stats" style={{ marginBottom: 16 }}>
         <div className="stat">
-          <div className="stat-value">{totalRounds}</div>
-          <div className="stat-label">累计轮次</div>
+          <div className="stat-value">{newTotalQuestions}</div>
+          <div className="stat-label">累计答题</div>
+        </div>
+        <div className="stat">
+          <div className="stat-value">{newTotalCorrect}</div>
+          <div className="stat-label">累计答对</div>
         </div>
         <div className="stat">
           <div className="stat-value">{avgAccuracy}%</div>
           <div className="stat-label">平均正确率</div>
-        </div>
-        <div className="stat">
-          <div className="stat-value">{bestAccuracy}%</div>
-          <div className="stat-label">最高正确率</div>
         </div>
       </div>
       <div style={{ fontSize: 12, color: '#999', textAlign: 'center', marginBottom: 24 }}>
