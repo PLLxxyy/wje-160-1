@@ -1,7 +1,16 @@
-import { GameData, LevelRecord, MistakeRecord, RankRecord, GarbageType } from '../types';
+import { GameData, LevelRecord, MistakeRecord, RankRecord, GarbageType, PracticeStats } from '../types';
 import { TOTAL_LEVELS } from '../data/questions';
 
 const STORAGE_KEY = 'garbage-sorting-game-data';
+
+function getDefaultPractice(): PracticeStats {
+  return {
+    totalQuestions: 0,
+    totalCorrect: 0,
+    bestAccuracy: 0,
+    lastAccuracy: 0,
+  };
+}
 
 function getDefaultData(): GameData {
   const levels: LevelRecord[] = [];
@@ -22,12 +31,20 @@ function getDefaultData(): GameData {
     mistakes: {},
     leaderboard: [],
     playerName: '',
-    practice: {
-      totalQuestions: 0,
-      totalCorrect: 0,
-      bestAccuracy: 0,
-      lastAccuracy: 0,
-    },
+    practice: getDefaultPractice(),
+  };
+}
+
+/** 清洗 practice 数据，只保留正确率相关字段，过滤旧版本的多余字段 */
+function sanitizePractice(raw: unknown): PracticeStats {
+  const defaults = getDefaultPractice();
+  if (!raw || typeof raw !== 'object') return defaults;
+  const obj = raw as Record<string, unknown>;
+  return {
+    totalQuestions: typeof obj.totalQuestions === 'number' ? obj.totalQuestions : defaults.totalQuestions,
+    totalCorrect: typeof obj.totalCorrect === 'number' ? obj.totalCorrect : defaults.totalCorrect,
+    bestAccuracy: typeof obj.bestAccuracy === 'number' ? obj.bestAccuracy : defaults.bestAccuracy,
+    lastAccuracy: typeof obj.lastAccuracy === 'number' ? obj.lastAccuracy : defaults.lastAccuracy,
   };
 }
 
@@ -43,7 +60,7 @@ export function loadData(): GameData {
       levels: parsed.levels && parsed.levels.length > 0 ? parsed.levels : defaults.levels,
       mistakes: parsed.mistakes || {},
       leaderboard: parsed.leaderboard || [],
-      practice: parsed.practice || defaults.practice,
+      practice: sanitizePractice(parsed.practice),
     };
   } catch {
     return getDefaultData();
@@ -51,7 +68,11 @@ export function loadData(): GameData {
 }
 
 export function saveData(data: GameData): void {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  const cleanData: GameData = {
+    ...data,
+    practice: sanitizePractice(data.practice),
+  };
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(cleanData));
 }
 
 export function resetData(): GameData {
